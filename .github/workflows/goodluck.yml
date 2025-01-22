@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '16' # Adjust Node.js version if required
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
       - name: Build Next.js App
         run: npm run build
       - name: Export Static Files
