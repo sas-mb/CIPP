@@ -3,13 +3,13 @@ import {
   Button,
   CardActions,
   CardContent,
-  Grid,
   Stack,
   Skeleton,
   SvgIcon,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Grid } from "@mui/system";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ApiGetCall, ApiPostCall } from "/src/api/ApiCall";
@@ -89,9 +89,14 @@ const CippIntegrationSettings = ({ children }) => {
       Tenant: selectedTenant.label,
       IntegrationName: selectedCompany.label,
       IntegrationId: selectedCompany.value,
+      TenantDomain: selectedTenant.addedFields.defaultDomainName,
     };
 
     setTableData([...tableData, newRowData]);
+
+    // Clear the form fields after successfully adding the mapping
+    formControl.setValue("tenantFilter", null);
+    formControl.setValue("integrationCompany", null);
   };
 
   const handleAutoMap = () => {
@@ -109,6 +114,7 @@ const CippIntegrationSettings = ({ children }) => {
         newTableData.push({
           TenantId: tenant.customerId,
           Tenant: tenant.displayName,
+          TenantDomain: tenant.defaultDomainName,
           IntegrationName: matchingCompany.name,
           IntegrationId: matchingCompany.value,
         });
@@ -160,7 +166,7 @@ const CippIntegrationSettings = ({ children }) => {
                 mb: 3,
               }}
             >
-              <Grid item xs={12} md={4}>
+              <Grid size={{ md: 4, xs: 12 }}>
                 <Box sx={{ my: "auto" }}>
                   <CippFormTenantSelector
                     formControl={formControl}
@@ -172,20 +178,20 @@ const CippIntegrationSettings = ({ children }) => {
                   />
                 </Box>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Box sx={{ my: "auto" }}>
                   <SvgIcon>
                     <SyncAlt />
                   </SvgIcon>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ md: 4, xs: 12 }}>
                 <CippFormComponent
                   type="autoComplete"
                   fullWidth
                   name="integrationCompany"
                   formControl={formControl}
-                  placeholder={`Select ${extension.name} Company`}
+                  label={`Select ${extension.name} Company`}
                   options={mappings?.data?.Companies?.map((company) => {
                     return {
                       label: company.name,
@@ -195,9 +201,10 @@ const CippIntegrationSettings = ({ children }) => {
                   creatable={false}
                   multiple={false}
                   isFetching={mappings.isFetching}
+                  sortOptions={true}
                 />
               </Grid>
-              <Grid item>
+              <Grid>
                 <Stack direction={"row"} spacing={1}>
                   <Tooltip title="Add Mapping">
                     <Button size="small" onClick={() => handleAddItem()} variant="contained">
@@ -237,7 +244,7 @@ const CippIntegrationSettings = ({ children }) => {
                 reportTitle={`${extension.id}-tenant-map`}
                 data={tableData}
                 simple={false}
-                simpleColumns={["Tenant", "IntegrationName"]}
+                simpleColumns={["IntegrationName", "Tenant", "TenantDomain"]}
                 isFetching={mappings.isFetching}
                 refreshFunction={() => mappings.refetch()}
               />
@@ -260,17 +267,17 @@ const CippIntegrationSettings = ({ children }) => {
           {mappings.isLoading && (
             <Box>
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={60} />
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={60} />
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={300} />
                   </Box>
@@ -280,7 +287,7 @@ const CippIntegrationSettings = ({ children }) => {
           )}
           {mappings.isSuccess && !extension && (
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Box sx={{ p: 3 }}>
                   <Box sx={{ textAlign: "center" }}>Extension not found</Box>
                 </Box>
