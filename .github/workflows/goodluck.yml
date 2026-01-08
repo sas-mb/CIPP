@@ -32,11 +32,18 @@ jobs:
       - name: Build Next.js App
         run: npm run build
 
-      # CIPP's build script deletes package.json/yarn.lock, so restore them for the next step
-      - name: Restore package files
+      - name: Restore package.json for export
+        shell: bash
         run: |
-          git restore package.json yarn.lock package-lock.json 2>/dev/null || true
-          git checkout -- package.json yarn.lock package-lock.json 2>/dev/null || true
+          echo "PWD is: $(pwd)"
+          echo "Listing repo root:"
+          ls -la
+
+          echo "Restoring package.json from git..."
+          git checkout -- package.json || true
+
+          echo "Confirm package.json exists:"
+          test -f package.json && echo "package.json OK" || (echo "package.json STILL missing" && exit 1)
 
       - name: Export Static Files
         run: npm run export
